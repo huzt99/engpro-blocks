@@ -27,9 +27,15 @@ jobs:
                   b, e = os.path.splitext(f)
                   if e.lower() not in OK: continue
                   path = os.path.join(root, f)[2:].replace(os.sep, '/')
-                  top = path.split('/')[0] if '/' in path else 'other'
+                  top = path.split('/')[0] if '/' in path else ''
                   cat = top if top in CATS else 'other'
-                  it = {'name': b.replace('_', ' ').replace('-', ' '), 'cat': cat, 'url': path, 'size': '%.1f MB' % (os.path.getsize(path) / 1048576)}
+                  nm = b
+                  for sep in ('_', '-', ' '):
+                      pre, _s, rest = b.partition(sep)
+                      if rest and pre.lower() in CATS:
+                          cat, nm = pre.lower(), rest
+                          break
+                  it = {'name': nm.replace('_', ' ').replace('-', ' '), 'cat': cat, 'url': path, 'size': '%.1f MB' % (os.path.getsize(path) / 1048576)}
                   if e.lower() not in PREV and b in names:
                       it['preview'] = os.path.join(root, names[b])[2:].replace(os.sep, '/')
                   items.append(it)
